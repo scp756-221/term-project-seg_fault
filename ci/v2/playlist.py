@@ -9,17 +9,17 @@ class Playlist():
         self._url = url
         self._auth = auth
 
-    def update_add(self, u_id, play_id, music_id):
+    def add_songs_to_playlist(self, play_id, music_id):
         req = requests.put(
-            self._url + 'update_add/' + u_id + '/' + play_id,
-            json={'music': music_id},
+            self._url + 'add_songs/' + play_id,
+            json={'Music': music_id},
             headers={'Authorization':self._auth}
         )
         return req.status_code
 
-    def update_delete(self, u_id, play_id, music_id):
+    def delete_songs_to_playlist(self, play_id, music_id):
         req = requests.put(
-            self.url + 'update_delete' + u_id + '/' + play_id,
-            json={'music':music_id},
+            self.url + 'delete_songs/' + play_id,
+            json={'Music':music_id},
             headers={'Authorization':self._auth}
         )
