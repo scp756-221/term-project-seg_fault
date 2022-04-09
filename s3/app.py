@@ -1,3 +1,4 @@
+
 """
 SFU CMPT 756
 Sample application---playlist service.
@@ -60,7 +61,7 @@ def health():
 @metrics.do_not_track()
 def readiness():
     return Response("", status=200, mimetype="application/json")
-
+  
 
 @bp.route('/add_songs/<playlist_id>', methods=['PUT'])
 def add_songs_to_playlist(playlist_id):
@@ -103,41 +104,33 @@ def create_playlist():
 
 @bp.route('/<playlist_id>', methods=['DELETE'])
 def delete_playlist(user_id):
+    raise NotImplemented
+
+  
+@bp.route('/<playlist_id>', methods=['GET'])
+def get_playlist(playlist_id):
     headers = request.headers
     # check header here
     if 'Authorization' not in headers:
         return Response(json.dumps({"error": "missing auth"}),
                         status=401,
                         mimetype='application/json')
-    try:
-        content = request.get_json()
-        deleting_songs = content['songs']
-    except Exception:
-        return json.dumps({"message": "error reading arguments"})
+
     payload = {"objtype": "playlist", "objkey": playlist_id}
-    # read the original songs from db
-    read_url = db['name'] + '/' + db['endpoint'][0]
+
+    '''# This version will return 500 for a fraction of its calls
+    if random.randrange(100) < PERCENT_ERROR:
+        return Response(json.dumps({"error": "get_playlist failed"}),
+                        status=500,
+                        mimetype='application/json')'''
+
+    url = db['name'] + '/' + db['endpoint'][0]
     response = requests.get(
-        read_url,
-        params=payload,
-        headers={'Authorization': headers['Authorization']})
-    original_songs = response.json()['Items'][0]["songs"]
-    if original_songs is None:
-        return Response(json.dumps({"error": "cannot delete songs from an empty playlist"}),
-                        status=401,
-                        mimetype='application/json')
-    for song in deleting_songs:
-        original_songs.remove(song)
-    if len(original_songs) == 0:
-        original_songs = None
-    # update the song list to db
-    url = db['name'] + '/' + db['endpoint'][3]
-    response = requests.put(
         url,
         params=payload,
-        json={"songs": original_songs},
         headers={'Authorization': headers['Authorization']})
     return (response.json())
+
 
 
 @bp.route('delete_songs/<playlist_id>', methods=['PUT'])
@@ -149,12 +142,7 @@ def delete_songs_to_playlist(playlist_id):
 def create_playlist():
     raise NotImplemented
 
-
-@bp.route('/<playlist_id>', methods=['GET'])
-def get_playlist(playlist_id):
-    raise NotImplemented
-
-
+    
 # All database calls will have this prefix.  Prometheus metric
 # calls will not---they will have route '/metrics'.  This is
 # the conventional organization.
