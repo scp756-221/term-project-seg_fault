@@ -79,7 +79,7 @@ def create_playlist():
 
 @bp.route('/<playlist_id>', methods=['DELETE'])
 def delete_playlist(user_id):
-        headers = request.headers
+    headers = request.headers
     # check header here
     if 'Authorization' not in headers:
         return Response(json.dumps({"error": "missing auth"}),
@@ -91,8 +91,6 @@ def delete_playlist(user_id):
         params={"objtype": "playlist", "objkey": playlist_id},
         headers={'Authorization': headers['Authorization']})
     return (response.json())
-
-
 
 @bp.route('/<playlist_id>', methods=['GET'])
 def get_playlist(playlist_id):
@@ -112,3 +110,4 @@ if __name__ == '__main__':
     p = int(sys.argv[1])
     # Do not set debug=True---that will disable the Prometheus metrics
     app.run(host='0.0.0.0', port=p, threaded=True)
+
