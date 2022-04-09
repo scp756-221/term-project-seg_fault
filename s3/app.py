@@ -62,43 +62,39 @@ def readiness():
     return Response("", status=200, mimetype="application/json")
 
 
-@bp.route('add_songs/<playlist_id>', methods=['PUT', 'GET'])
+@bp.route('/add_songs/<playlist_id>', methods=['PUT'])
 def add_songs_to_playlist(playlist_id):
     headers = request.headers
+    # check header here
     if 'Authorization' not in headers:
         return Response(json.dumps({"error": "missing auth"}),
                         status=401,
                         mimetype='application/json')
     try:
         content = request.get_json()
-        music = content['Music']
+        new_songs = content['songs']
     except Exception:
         return json.dumps({"message": "error reading arguments"})
     payload = {"objtype": "playlist", "objkey": playlist_id}
-    url = db['name'] + '/' + db['endpoint'][0]
+    # read the original songs from db
+    read_url = db['name'] + '/' + db['endpoint'][0]
     response = requests.get(
-        url,
+        read_url,
         params=payload,
         headers={'Authorization': headers['Authorization']})
-    if response.status_code != 200:
-        response = {
-            "Count": 0,
-            "Items": []
-         }
-        return app.make_response((response, 404))
-    item = response.json()['Items']
-    music_list = (item['songs']if 'songs' in item else None)
-    if music_list is None:
-        music_list = {music}
-    else:
-        music_list.add(music)
+    original_songs = response.json()['Items'][0]["songs"]
+    updated_songs = new_songs
+    if original_songs is not None:
+        updated_songs += original_songs
+    # update the song list to db
     url = db['name'] + '/' + db['endpoint'][3]
     response = requests.put(
         url,
         params=payload,
-        json={"songs": music_list}
+        json={"songs": updated_songs},
         headers={'Authorization': headers['Authorization']})
-    return(response.json())
+    return (response.json())
+
 
 @bp.route('delete_songs/<playlist_id>', methods=['PUT', 'GET'])
 def delete_songs_to_playlist(playlist_id):
@@ -145,6 +141,7 @@ def delete_songs_to_playlist(playlist_id):
             json={"songs": music_list}
             headers={'Authorization': headers['Authorization']})
         return(response.json())
+
 
 @bp.route('/', methods=['POST'])
 def create_playlist():
