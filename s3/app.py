@@ -23,7 +23,6 @@ import requests
 import simplejson as json
 
 # The application
-
 app = Flask(__name__)
 
 metrics = PrometheusMetrics(app)
