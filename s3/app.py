@@ -78,7 +78,14 @@ def create_playlist():
 
 
 @bp.route('/<playlist_id>', methods=['DELETE'])
+<<<<<<< HEAD
+def delete_playlist(playlist_id):
+=======
 def delete_playlist(user_id):
+<<<<<<< Updated upstream
+=======
+>>>>>>> 571f8a5490aca3359d0442bfea70e34a750f9ee3
+>>>>>>> Stashed changes
     headers = request.headers
     # check header here
     if 'Authorization' not in headers:
@@ -92,6 +99,13 @@ def delete_playlist(user_id):
         headers={'Authorization': headers['Authorization']})
     return (response.json())
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> 571f8a5490aca3359d0442bfea70e34a750f9ee3
+>>>>>>> Stashed changes
 @bp.route('/<playlist_id>', methods=['GET'])
 def get_playlist(playlist_id):
     raise NotImplemented
@@ -110,4 +124,11 @@ if __name__ == '__main__':
     p = int(sys.argv[1])
     # Do not set debug=True---that will disable the Prometheus metrics
     app.run(host='0.0.0.0', port=p, threaded=True)
+<<<<<<< Updated upstream
 
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> 571f8a5490aca3359d0442bfea70e34a750f9ee3
+>>>>>>> Stashed changes
