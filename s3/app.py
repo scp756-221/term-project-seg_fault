@@ -103,34 +103,13 @@ def create_playlist():
 
 
 @bp.route('/<playlist_id>', methods=['DELETE'])
-def delete_playlist(user_id):
+def delete_playlist(playlist_id):
     raise NotImplemented
 
   
 @bp.route('/<playlist_id>', methods=['GET'])
 def get_playlist(playlist_id):
-    headers = request.headers
-    # check header here
-    if 'Authorization' not in headers:
-        return Response(json.dumps({"error": "missing auth"}),
-                        status=401,
-                        mimetype='application/json')
-
-    payload = {"objtype": "playlist", "objkey": playlist_id}
-
-    '''# This version will return 500 for a fraction of its calls
-    if random.randrange(100) < PERCENT_ERROR:
-        return Response(json.dumps({"error": "get_playlist failed"}),
-                        status=500,
-                        mimetype='application/json')'''
-
-    url = db['name'] + '/' + db['endpoint'][0]
-    response = requests.get(
-        url,
-        params=payload,
-        headers={'Authorization': headers['Authorization']})
-    return (response.json())
-
+    raise NotImplemented
 
 
 @bp.route('delete_songs/<playlist_id>', methods=['PUT'])
@@ -156,4 +135,3 @@ if __name__ == '__main__':
     p = int(sys.argv[1])
     # Do not set debug=True---that will disable the Prometheus metrics
     app.run(host='0.0.0.0', port=p, threaded=True)
-
