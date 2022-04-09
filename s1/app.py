@@ -140,7 +140,19 @@ def get_user(user_id):
 
 @bp.route('/login', methods=['PUT'])
 def login():
-    raise Not Implement
+    try:
+        content = request.get_json()
+        uid = content['uid']
+    except Exception:
+        return json.dumps({"message": "error reading parameters"})
+    url = db['name'] + '/' + db['endpoint'][0]
+    response = requests.get(url, params={"objtype": "user", "objkey": uid})
+    data = response.json()
+    if len(data['Items']) > 0:
+        encoded = jwt.encode({'user_id': uid, 'time': time.time()},
+                             'secret',
+                             algorithm='HS256')
+    return encoded
 
 
 @bp.route('/logoff', methods=['PUT'])
