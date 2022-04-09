@@ -143,28 +143,14 @@ def delete_songs_to_playlist(playlist_id):
         return(response.json())
 
 
+@bp.route('delete_songs/<playlist_id>', methods=['PUT'])
+def delete_songs_to_playlist(playlist_id):
+    raise NotImplemented
+
+
 @bp.route('/', methods=['POST'])
 def create_playlist():
-    headers = request.headers
-    # check header here
-    if 'Authorization' not in headers:
-        return Response(json.dumps({"error": "missing auth"}),
-                        status=401,
-                        mimetype='application/json')
-    try:
-        content = request.get_json()
-        playlist_name = content['name']
-        init_songs = None
-        if 'songs' in content:
-            init_songs = content['songs']
-    except Exception:
-        return json.dumps({"message": "error reading arguments"})
-    url = db['name'] + '/' + db['endpoint'][1]
-    response = requests.post(
-        url,
-        json={"objtype": "playlist", "name": playlist_name, "songs": init_songs},
-        headers={'Authorization': headers['Authorization']})
-    return (response.json())
+    raise NotImplemented
 
 
 @bp.route('/<playlist_id>', methods=['DELETE'])
