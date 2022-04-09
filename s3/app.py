@@ -1,4 +1,3 @@
-
 """
 SFU CMPT 756
 Sample application---playlist service.
@@ -79,7 +78,7 @@ def create_playlist():
 
 
 @bp.route('/<playlist_id>', methods=['DELETE'])
-def delete_playlist(user_id):
+def delete_playlist(playlist_id):
     raise NotImplemented
 
 
@@ -92,19 +91,13 @@ def get_playlist(playlist_id):
                         status=401,
                         mimetype='application/json')
     payload = {"objtype": "playlist", "objkey": playlist_id}
-
-    '''# This version will return 500 for a fraction of its calls
-    if random.randrange(100) < PERCENT_ERROR:
-        return Response(json.dumps({"error": "get_playlist failed"}),
-                        status=500,
-                        mimetype='application/json')'''
-
     url = db['name'] + '/' + db['endpoint'][0]
     response = requests.get(
         url,
         params=payload,
         headers={'Authorization': headers['Authorization']})
     return (response.json())
+
 
 # All database calls will have this prefix.  Prometheus metric
 # calls will not---they will have route '/metrics'.  This is
