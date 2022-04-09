@@ -59,16 +59,40 @@ def health():
 @metrics.do_not_track()
 def readiness():
     return Response("", status=200, mimetype="application/json")
+  
 
-
-@bp.route('add_songs/<playlist_id>', methods=['PUT'])
+@bp.route('/add_songs/<playlist_id>', methods=['PUT'])
 def add_songs_to_playlist(playlist_id):
-    raise NotImplemented
-
-
-@bp.route('delete_songs/<playlist_id>', methods=['PUT'])
-def delete_songs_to_playlist(playlist_id):
-    raise NotImplemented
+    headers = request.headers
+    # check header here
+    if 'Authorization' not in headers:
+        return Response(json.dumps({"error": "missing auth"}),
+                        status=401,
+                        mimetype='application/json')
+    try:
+        content = request.get_json()
+        new_songs = content['songs']
+    except Exception:
+        return json.dumps({"message": "error reading arguments"})
+    payload = {"objtype": "playlist", "objkey": playlist_id}
+    # read the original songs from db
+    read_url = db['name'] + '/' + db['endpoint'][0]
+    response = requests.get(
+        read_url,
+        params=payload,
+        headers={'Authorization': headers['Authorization']})
+    original_songs = response.json()['Items'][0]["songs"]
+    updated_songs = new_songs
+    if original_songs is not None:
+        updated_songs += original_songs
+    # update the song list to db
+    url = db['name'] + '/' + db['endpoint'][3]
+    response = requests.put(
+        url,
+        params=payload,
+        json={"songs": updated_songs},
+        headers={'Authorization': headers['Authorization']})
+    return (response.json())
 
 
 @bp.route('/', methods=['POST'])
@@ -80,7 +104,7 @@ def create_playlist():
 def delete_playlist(playlist_id):
     raise NotImplemented
 
-
+  
 @bp.route('/<playlist_id>', methods=['GET'])
 def get_playlist(playlist_id):
     headers = request.headers
@@ -89,6 +113,7 @@ def get_playlist(playlist_id):
         return Response(json.dumps({"error": "missing auth"}),
                         status=401,
                         mimetype='application/json')
+
     payload = {"objtype": "playlist", "objkey": playlist_id}
     url = db['name'] + '/' + db['endpoint'][0]
     response = requests.get(
@@ -98,6 +123,20 @@ def get_playlist(playlist_id):
     return (response.json())
 
 
+<<<<<<< HEAD
+=======
+
+@bp.route('delete_songs/<playlist_id>', methods=['PUT'])
+def delete_songs_to_playlist(playlist_id):
+    raise NotImplemented
+
+
+@bp.route('/', methods=['POST'])
+def create_playlist():
+    raise NotImplemented
+
+    
+>>>>>>> 5de14cf0808a0e41320deaf281417c3291fd4534
 # All database calls will have this prefix.  Prometheus metric
 # calls will not---they will have route '/metrics'.  This is
 # the conventional organization.
@@ -111,3 +150,7 @@ if __name__ == '__main__':
     p = int(sys.argv[1])
     # Do not set debug=True---that will disable the Prometheus metrics
     app.run(host='0.0.0.0', port=p, threaded=True)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5de14cf0808a0e41320deaf281417c3291fd4534
