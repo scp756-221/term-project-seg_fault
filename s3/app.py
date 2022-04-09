@@ -96,7 +96,7 @@ def add_songs_to_playlist(playlist_id):
     return (response.json())
 
 
-@bp.route('delete_songs/<playlist_id>', methods=['PUT', 'GET'])
+@bp.route('delete_songs/<playlist_id>', methods=['PUT'])
 def delete_songs_to_playlist(playlist_id):
     headers = request.headers
     # check header here
@@ -106,41 +106,33 @@ def delete_songs_to_playlist(playlist_id):
                         mimetype='application/json')
     try:
         content = request.get_json()
-        music = content['Music']
+        deleting_songs = content['songs']
     except Exception:
         return json.dumps({"message": "error reading arguments"})
     payload = {"objtype": "playlist", "objkey": playlist_id}
-    url = db['name'] + '/' + db['endpoint'][0]
+    # read the original songs from db
+    read_url = db['name'] + '/' + db['endpoint'][0]
     response = requests.get(
-        url,
+        read_url,
         params=payload,
         headers={'Authorization': headers['Authorization']})
-    if response.status_code != 200:
-        response = {
-            "Count": 0,
-            "Items": []
-         }
-        return app.make_response((response, 404))
-    item = response.json()['Items']
-    music_list = (item['songs']if 'songs' in item else None)
-    if music_list is None or music not in music_list:
-        response = {
-            "Count": 0,
-            "Items": []
-        }
-        return app.make_response((response, 404))
-    else:
-        music_list.discard(music)
-        # check if the set is empty 
-        if not music_list:
-            music_list = None
-        url = db['name'] + '/' + db['endpoint'][3]
-        response = requests.put(
-            url,
-            params=payload,
-            json={"songs": music_list}
-            headers={'Authorization': headers['Authorization']})
-        return(response.json())
+    original_songs = response.json()['Items'][0]["songs"]
+    if original_songs is None:
+        return Response(json.dumps({"error": "cannot delete songs from an empty playlist"}),
+                        status=401,
+                        mimetype='application/json')
+    for song in deleting_songs:
+        original_songs.remove(song)
+    if len(original_songs) == 0:
+        original_songs = None
+    # update the song list to db
+    url = db['name'] + '/' + db['endpoint'][3]
+    response = requests.put(
+        url,
+        params=payload,
+        json={"songs": original_songs},
+        headers={'Authorization': headers['Authorization']})
+    return (response.json())
 
 
 @bp.route('delete_songs/<playlist_id>', methods=['PUT'])
