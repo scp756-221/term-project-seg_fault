@@ -86,6 +86,9 @@ def add_songs_to_playlist(playlist_id):
     updated_songs = new_songs
     if original_songs is not None:
         updated_songs += original_songs
+        updated_songs = "/".join(updated_songs)
+    else:
+        updated_songs = None
     # update the song list to db
     url = db['name'] + '/' + db['endpoint'][3]
     response = requests.put(
@@ -121,10 +124,13 @@ def delete_songs_from_playlist(playlist_id):
         return Response(json.dumps({"error": "cannot delete songs from an empty playlist"}),
                         status=401,
                         mimetype='application/json')
+    original_songs = original_songs.split("/")
     for song in deleting_songs:
         original_songs.remove(song)
     if len(original_songs) == 0:
         original_songs = None
+    else:
+        original_songs = "/".join(original_songs)
     # update the song list to db
     url = db['name'] + '/' + db['endpoint'][3]
     response = requests.put(
@@ -148,7 +154,7 @@ def create_playlist():
         playlist_name = content['name']
         init_songs = None
         if 'songs' in content:
-            init_songs = content['songs']
+            init_songs = "/".join(content['songs'])
     except Exception:
         return json.dumps({"message": "error reading arguments"})
     url = db['name'] + '/' + db['endpoint'][1]
