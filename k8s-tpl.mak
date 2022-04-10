@@ -70,7 +70,7 @@ provision: istio prom deploy
 # --- deploy: Deploy and monitor the three microservices
 # Use `provision` to deploy the entire stack (including Istio, Prometheus, ...).
 # This target only deploys the sample microservices
-deploy: appns gw s1 s2 s3 db monitoring
+deploy: appns gw s1 s2 s3 db monitoring loader
 	$(KC) -n $(APP_NS) get gw,vs,deploy,svc,pods
 
 # --- rollout: Rollout new deployments of all microservices
