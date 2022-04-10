@@ -112,7 +112,7 @@ object RPlaylistVarying {
 }
 
 /*
-  Failed attempt to interleave reads from User, Music and Playlist tables.
+  Failed attempt to interleave reads from User, Music tables.
   The Gatling EDSL only honours the second (Music) read,
   ignoring the first read of User. [Shrug-emoji] 
  */
@@ -120,7 +120,6 @@ object RBoth {
 
   val u_feeder = csv("users.csv").eager.circular
   val m_feeder = csv("music.csv").eager.random
-  val p_feeder = csv("playlist.csv").eager.random
 
   val rboth = forever("i") {
     feed(u_feeder)
@@ -132,14 +131,11 @@ object RBoth {
     .exec(http("RMusic ${i}")
       .get("/api/v1/music/${UUID}"))
       .pause(1);
-    
-    feed(p_feeder)
-    .exec(http("RPlaylist ${i}")
-      .get("/api/v1/playlist/${UUID}"))
-      .pause(1)
   }
 
 }
+
+
 
 // Get Cluster IP from CLUSTER_IP environment variable or default to 127.0.0.1 (Minikube)
 class ReadTablesSim extends Simulation {
@@ -168,14 +164,14 @@ class ReadMusicSim extends ReadTablesSim {
   ).protocols(httpProtocol)
 }
 
-class ReadPlaylistSim extends ReadTablesSim {
-  val scnReadMusic = scenario("ReadPlaylist")
-    .exec(RPlaylist.rplaylist)
+// class ReadPlaylistSim extends ReadTablesSim {
+//   val scnReadMusic = scenario("ReadPlaylist")
+//     .exec(RPlaylist.rplaylist)
 
-  setUp(
-    scnReadPlaylist.inject(atOnceUsers(Utility.envVarToInt("USERS", 1)))
-  ).protocols(httpProtocol)
-}
+//   setUp(
+//     scnReadPlaylist.inject(atOnceUsers(Utility.envVarToInt("USERS", 1)))
+//   ).protocols(httpProtocol)
+// }
 
 /*
   Read both services concurrently at varying rates.
@@ -183,8 +179,8 @@ class ReadPlaylistSim extends ReadTablesSim {
   is reached for each service.
 */
 class ReadBothVaryingSim extends ReadTablesSim {
-  val scnReadPV = scenario("ReadPlaylistVarying")
-    .exec(RPlaylistVarying.rplaylist)
+  // val scnReadPV = scenario("ReadPlaylistVarying")
+  //   .exec(RPlaylistVarying.rplaylist)
 
   val scnReadMV = scenario("ReadMusicVarying")
     .exec(RMusicVarying.rmusic)
