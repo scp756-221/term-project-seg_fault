@@ -126,7 +126,7 @@ if __name__ == '__main__':
         next(rdr)  # Skip header
         for name, songs_list, uuid in rdr:
             resp = create_playlist(name.strip(),
-                               eval(songs_list.strip()),
+                               songs_list.strip(),
                                uuid.strip())
             resp = check_resp(resp, 'playlist_id')
             if resp is None or resp != uuid:
