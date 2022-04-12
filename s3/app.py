@@ -207,7 +207,6 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         logging.error("Usage: app.py <service-port>")
         sys.exit(-1)
-
     p = int(sys.argv[1])
     # Do not set debug=True---that will disable the Prometheus metrics
     app.run(host='0.0.0.0', port=p, threaded=True)

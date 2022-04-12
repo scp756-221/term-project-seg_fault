@@ -31,7 +31,7 @@ IC=istioctl
 # Application versions
 # Override these by environment variables and `make -e`
 APP_VER_TAG=v1
-S2_VER=v1
+S2_VER=v2
 LOADER_VER=v1
 
 # Kubernetes parameters that most of the time will be unchanged
