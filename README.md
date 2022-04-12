@@ -49,8 +49,6 @@ $ aws dynamodb list-tables
 
 The resulting output should include tables `User` and `Music`.
 
-----
-
 ### 3. Start up an Amazon EKS cluster
 
 ~~~
@@ -80,6 +78,8 @@ $ ./gatling-(user/music/playlist).sh N
 ~~~
 $ ./scale.sh
 ~~~
+
+----
 
 ### Reference
 
