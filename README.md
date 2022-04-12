@@ -51,6 +51,35 @@ The resulting output should include tables `User` and `Music`.
 
 ----
 
+### 3. Start up an Amazon EKS cluster
+
+~~~
+/home/k8s# make -f eks.mak start
+~~~
+
+### 4. Provision the cluster
+
+~~~
+/home/k8s# kubectl create ns c756ns
+/home/k8s# kubectl config set-context --current --namespace=c756ns
+/home/k8s# make -f k8s.mak provision
+~~~
+
+### 5. Start Gatling simulations
+
+(Before running the following script, please first replace the `CLUSTER_IP` field in the script to your cluster IP.)
+
+~~~
+$ ./gatling-(user/music/playlist).sh N
+~~~
+
+(Note that `N` is an argument that how many calls you want to simulate.)
+
+### 6. Scale up the cluster horizentally
+
+~~~
+$ ./scale.sh
+~~~
 
 ### Reference
 
