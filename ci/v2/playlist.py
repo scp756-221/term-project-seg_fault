@@ -19,12 +19,12 @@ class Playlist():
             return r.status_code, None, None
 
         item = r.json()['Items'][0]
-        return r.status_code, item['Artist'], item['SongTitle']
+        return r.status_code, item['name'], item['songs']
 
     def add_songs_to_playlist(self, play_id, music_id):
         req = requests.put(
             self._url + 'add_songs/' + play_id,
-            json={'Music': music_id},
+            json={'songs': music_id},
             headers={'Authorization':self._auth}
         )
         return req.status_code
@@ -32,15 +32,17 @@ class Playlist():
     def delete_songs_to_playlist(self, play_id, music_id):
         req = requests.put(
             self.url + 'delete_songs/' + play_id,
-            json={'Music':music_id},
+            json={'songs':music_id},
             headers={'Authorization':self._auth}
+        )
+        return req.status_code
     def delete(self, playlist_id):
-        """Delete an artist, song pair.
+        """Delete a playlist.
 
         Parameters
         ----------
         m_id: string
-            The UUID of this song in the music database.
+            The UUID of this playlist in the playlist database.
 
         Returns
         -------
